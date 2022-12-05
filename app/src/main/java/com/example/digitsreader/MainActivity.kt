@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.digitsreader.ml.ModelRgbPointEstimate
 import com.example.digitsreader.ml.ModelUnquant
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.common.ops.NormalizeOp
@@ -31,7 +32,7 @@ class MainActivity: AppCompatActivity(){
     lateinit var results: TextView
     lateinit var confidence_text: TextView
     lateinit var gallery: Button
-    val size: Int = 224
+    val size: Int = 28
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -62,18 +63,19 @@ class MainActivity: AppCompatActivity(){
             // Image processing:
             val imageProcessor = ImageProcessor.Builder()
                 .add(ResizeOp(size, size, ResizeOp.ResizeMethod.BILINEAR))
-                .add(NormalizeOp(0.0F, 255.0F))
+                //.add(NormalizeOp(0.0F, 255.0F))
                 .build()
 
-            var tensorImage = TensorImage(DataType.FLOAT32)
-
+            //var tensorImage = TensorImage(DataType.FLOAT32)
+            var tensorImage = TensorImage(DataType.UINT8)
             // Get from bitmap
             tensorImage.load(photo)
             // Apply transformation
             tensorImage = imageProcessor.process(tensorImage);
             //
             // Load model
-            val model = ModelUnquant.newInstance(this)
+            //val model = ModelUnquant.newInstance(this)
+            val model = ModelRgbPointEstimate.newInstance(this)
             //
 
             // Creates inputs for reference.
@@ -105,12 +107,14 @@ class MainActivity: AppCompatActivity(){
                     maxPos = i
                 }
             }
-            //val my_classes = (0..9).map { e -> e.toString()}
-            val my_classes = listOf("Luise", "Mentos")
+            val my_classes = (0..9).map { e -> e.toString()}
+            //val my_classes = listOf("Luise", "Mentos")
             results = findViewById(R.id.result)
             results.text = my_classes[maxPos]
             confidence_text = findViewById(R.id.confidence)
-            confidence_text.text = confidence.contentToString()
+            //confidence_text.text = confidence.contentToString()
+            confidence_text.text = confidence[maxPos].toString()
+
         }
         override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
             super.onActivityResult(requestCode, resultCode, data)
