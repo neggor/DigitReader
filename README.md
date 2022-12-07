@@ -6,4 +6,4 @@ A simple (toy) android app to recognize handwritten digits using Deep Learning. 
 
 Doesn't perform great but that isn't really the point!  ¯\\_(ツ)_/¯
 
-<img src="https://github.com/neggor/DigitReader/blob/master/Example.jpeg" width="200" />
+<img src="https://github.com/neggor/DigitReader/blob/master/example.jpeg" width="200" />
