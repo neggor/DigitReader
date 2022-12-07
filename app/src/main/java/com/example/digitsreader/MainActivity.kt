@@ -1,6 +1,7 @@
 package com.example.digitsreader
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -24,12 +25,19 @@ import org.tensorflow.lite.support.image.ops.ResizeOp
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import java.nio.ByteBuffer
 import kotlin.math.min
+import kotlin.math.roundToLong
 
 
 class MainActivity: AppCompatActivity(){
     private val cameraRequest = 1888
     lateinit var imageView: ImageView
-    lateinit var results: TextView
+    lateinit var result1: TextView
+    lateinit var result2: TextView
+    lateinit var result3: TextView
+    lateinit var prob1: TextView
+    lateinit var prob2: TextView
+    lateinit var prob3: TextView
+
     lateinit var confidence_text: TextView
     lateinit var gallery: Button
     val size: Int = 28
@@ -58,37 +66,23 @@ class MainActivity: AppCompatActivity(){
                 startActivityForResult(cameraIntent, 1);
             }
     }
+        @SuppressLint("SetTextI18n")
         fun classifyImage(photo: Bitmap){
 
             // Image processing:
             val imageProcessor = ImageProcessor.Builder()
                 .add(ResizeOp(size, size, ResizeOp.ResizeMethod.BILINEAR))
-                //.add(NormalizeOp(0.0F, 255.0F))
                 .build()
 
-            //var tensorImage = TensorImage(DataType.FLOAT32)
             var tensorImage = TensorImage(DataType.UINT8)
             // Get from bitmap
             tensorImage.load(photo)
             // Apply transformation
             tensorImage = imageProcessor.process(tensorImage);
-            //
+
             // Load model
-            //val model = ModelUnquant.newInstance(this)
             val model = ModelRgbPointEstimate.newInstance(this)
-            //
 
-            // Creates inputs for reference.
-            // Allocate memory
-            //var byteBuffer: ByteBuffer =  ByteBuffer.allocateDirect(4*size*size*3)
-            // Populate it, back from tensor image to bitmap then to byte buffer
-            //tensorImage.tensorBuffer
-
-            // Allocate
-            //val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, size, size, 3), DataType.FLOAT32)
-
-            //Populate
-            //inputFeature0.loadBuffer(byteBuffer)
 
             // Evaluate
             var outputs = model.process(tensorImage.tensorBuffer)
@@ -98,22 +92,25 @@ class MainActivity: AppCompatActivity(){
             val outputFeature0 = outputs.outputFeature0AsTensorBuffer
             val confidence = outputFeature0.floatArray
 
-            var maxPos: Int = 0
-            var maxConfidence: Float = 0.0F
 
-            for(i in confidence.indices){
-                   if (confidence[i] > maxConfidence){
-                    maxConfidence = confidence[i]
-                    maxPos = i
-                }
-            }
-            val my_classes = (0..9).map { e -> e.toString()}
-            //val my_classes = listOf("Luise", "Mentos")
-            results = findViewById(R.id.result)
-            results.text = my_classes[maxPos]
-            confidence_text = findViewById(R.id.confidence)
-            //confidence_text.text = confidence.contentToString()
-            confidence_text.text = confidence[maxPos].toString()
+            val myClasses = (0..9).sortedBy { -confidence[it] }.map { e -> e.toString()}
+
+            result1 = findViewById(R.id.result1)
+            result2 = findViewById(R.id.result2)
+            result3 = findViewById(R.id.result3)
+
+            prob1 = findViewById(R.id.prob1)
+            prob2 = findViewById(R.id.prob2)
+            prob3 = findViewById(R.id.prob3)
+
+            result1.text = myClasses[0]
+            result2.text = myClasses[1]
+            result3.text = myClasses[2]
+
+            confidence.sortDescending()
+            prob1.text = "${(String.format("%.2f", confidence[0]))}%"
+            prob2.text = "${(String.format("%.2f", confidence[1]))}%"
+            prob3.text = "${(String.format("%.2f", confidence[2]))}%"
 
         }
         override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
