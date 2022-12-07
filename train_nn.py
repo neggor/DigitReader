@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import cv2
 from scipy.ndimage.interpolation import rotate
 
-def convert_to_RBG(data):
+def convert_to_RGB(data):
     return tf.image.grayscale_to_rgb(tf.constant(np.expand_dims(data, -1))).numpy()
 
 def rotate_and_reduce(img):
@@ -69,8 +69,8 @@ def amplify(n_loops, data, labels):
 (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
 
 # Make RGB:
-x_train = convert_to_RBG(x_train)
-x_test = convert_to_RBG(x_test)
+x_train = convert_to_RGB(x_train)
+x_test = convert_to_RGB(x_test)
 
 # Data augmentation:
 _x_train, _y_train = amplify(data = x_train, labels = y_train, n_loops = 2)
