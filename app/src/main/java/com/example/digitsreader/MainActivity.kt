@@ -108,9 +108,9 @@ class MainActivity: AppCompatActivity(){
             result3.text = myClasses[2]
 
             confidence.sortDescending()
-            prob1.text = "${(String.format("%.2f", confidence[0]))}%"
-            prob2.text = "${(String.format("%.2f", confidence[1]))}%"
-            prob3.text = "${(String.format("%.2f", confidence[2]))}%"
+            prob1.text = "${(String.format("%.2f", confidence[0] * 100))}%"
+            prob2.text = "${(String.format("%.2f", confidence[1] * 100))}%"
+            prob3.text = "${(String.format("%.2f", confidence[2] * 100))}%"
 
         }
         override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
