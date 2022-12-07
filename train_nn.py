@@ -1,3 +1,8 @@
+''' For google colab...
+!pip install -q tflite-model-maker
+!pip install -q pycocotools
+!pip install -q tflite-support
+'''
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
