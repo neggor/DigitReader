@@ -125,5 +125,5 @@ tflite_model = converter.convert()
 with open('Model_RGB_point_estimate.tflite', 'wb') as f:
   f.write(tflite_model)
 
-plt.plot(history['val_loss'])
+plt.plot(history.history['val_loss'])
 plt.show()
